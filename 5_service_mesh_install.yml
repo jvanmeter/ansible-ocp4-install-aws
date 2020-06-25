@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+
+  environment:
+    KUBECONFIG: "{{ openshift_installer_path }}/auth/kubeconfig"  # "{{ ansible_env.PWD }}/auth/kubeconfig"
+
+  tasks:
+    - name: Deploy OpenShift Service Mesh
+      include_role:
+        name: service-mesh
