@@ -57,12 +57,10 @@
       shell: oc apply -f {{ openshift_installer_path }}/defaultProject.yaml
 
     - name: Add default project settings to openshift config
-      shell: |
-        cat <<EOF
-        oc get project.config.openshift.io/cluster -o yaml |
-        sed 's/spec: {}/spec: {"projectRequestTemplate":{"name": "project-request"}}/g' |
-        oc apply -f -
-        EOF
+      shell: >
+        oc get project.config.openshift.io/cluster -o yaml
+        | sed 's/spec: {}/spec: {"projectRequestTemplate":{"name": "project-request"}}/g'
+        | oc apply -f -
 
     - name: pausing 120 seconds to allow htpasswd authentication provider to start
       pause:
