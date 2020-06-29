@@ -30,9 +30,10 @@ openshift_installer_log_level:          debug          # log level options: info
 
 # Service Mesh variables
 # Operator variables
-# elasticsearch_operator_version:         "4.4"
-# jaegar_operator_version:                stable
-# kiali_operator_version:                 stable
-# servicemesh_operator_version:           stable
+# TODO: auto populate elasticsearch operator with OCP major.minor version
+elasticsearch_operator_version:         "4.4"
+jaegar_operator_version:                stable
+kiali_operator_version:                 stable
+servicemesh_operator_version:           stable
 # servicemesh_operators_namespace:        openshift-operators  # is this correct?  How is this related to the istio-system namespace
-# keycloak_operator_version:              "10.0.0"
+keycloak_operator_version:              "v10.0.0"

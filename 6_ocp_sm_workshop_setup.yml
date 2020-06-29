@@ -1,0 +1,46 @@
+---
+# setup workshop environment
+
+  - name: Make sure the operators are all installed
+    command: oc adm groups new workshop
+
+  - name: configure istio service mesh rbac
+    k8s:
+      state: present
+      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio-rbac.yaml') }}"
+
+
+for (( i=1 ; i<=$NUM_USERS ; i++ ))
+do 
+  oc adm groups add-users workshop user$i
+  oc new-project user$i --as=user$i \
+    --as-group=system:authenticated --as-group=system:authenticated:oauth
+  oc process -f ./roles/templates/ingress-loadbalancer.yaml \
+  -p INGRESS_GATEWAY_NAME=demogateway-user$i | oc create -n user$i -f -
+done
+
+  - name: Install istio servicemesh member roll
+    k8s:
+      state: present
+      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio-memberroll.yaml') }}"
+#    when:
+#      - not reg_servicemesh_member_roll.resources
+
+
+oc edit cm/kiali -n istio-system
+search for "excluded_workloads" and remove DeploymentConfig from the list
+
+  - name: Make sure the operators are all installed
+    command: oc rollout restart deployment kiali -n istio-system
+
+
+  - name: Create istio user operatorgroups
+    k8s:
+      state: present
+      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio_create_user_operatorgroup.yaml') }}"
+
+  - name: Install keycloak operator into each user's project
+    k8s:
+      state: present
+      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/keycloak_user_install.yaml') }}"
+

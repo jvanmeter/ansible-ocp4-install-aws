@@ -13,6 +13,8 @@
     namespace: "openshift-operators"
   loop: "{{ servicemesh_operators }}"
 
+# TODO: Add output on each retry.
+# TODO: update delay to 60 and retries to 10
 - name: Make sure the operators are all installed
   command: oc get clusterserviceversions -n istio-system -o custom-columns='PHASE:status.phase' --no-headers
   register: servicemesh_operator_status
@@ -36,11 +38,11 @@
     state: present
     definition: "{{ lookup('file', 'istio-installation.yml') }}"
 
-- name: Get ServiceMeshMemberRoll object
-  k8s_info:
-    api_version: maistra.io/v1
-    kind: ServiceMeshMemberRoll
-  register: reg_servicemesh_member_roll
+#- name: Get ServiceMeshMemberRoll object
+#  k8s_info:
+#    api_version: maistra.io/v1
+#    kind: ServiceMeshMemberRoll
+#  register: reg_servicemesh_member_roll
 
 # NOTE: commented out until shell script can be converted to ansible code
 # Only install the default servicemesh member roll if one doesn't exist

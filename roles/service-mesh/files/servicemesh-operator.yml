@@ -4,7 +4,7 @@ metadata:
   name: servicemesh-operator
   namespace: openshift-operators
 spec:
-  channel: "stable"
+  channel: {{ servicemesh_operator_version }}
   # installPlanApproval: Automatic
   name: servicemeshoperator
   source: redhat-operators

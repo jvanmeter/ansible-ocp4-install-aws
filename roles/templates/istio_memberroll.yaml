@@ -1,0 +1,11 @@
+# TODO: Verify loop structure
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  members:
+{% for i in openshift_user_count%} # TODO
+    - user{{ i }}
+{% endfor %}

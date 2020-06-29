@@ -1,0 +1,9 @@
+# TODO: parameterize user number loop variable
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: user${i}-asdf #TODO
+  namespace: user$i #TODO
+spec:
+  targetNamespaces:
+  - user$i #TODO
