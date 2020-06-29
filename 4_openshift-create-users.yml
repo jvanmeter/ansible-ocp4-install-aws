@@ -39,14 +39,28 @@
 
     - name: template htpasswd custom resource config file
       template:
-        src: "{{ openshift_installer_path }}/roles/templates/htpasswd-cr.yml.j2"
-        dest: "{{ openshift_installer_path }}/htpasswd-cr.yml"
+        src: "{{ openshift_installer_path }}/roles/templates/htpasswd-cr.yaml.j2"
+        dest: "{{ openshift_installer_path }}/htpasswd-cr.yaml"
 
     - name: apply htpasswd custom resource identity provider
       shell: |
         oc login https://api.{{ openshift_cluster_fqdn }}:6443 --username=kubeadmin --password={{ kubeadmin_password }}
-        oc apply -f {{ openshift_installer_path }}/htpasswd-cr.yml
+        oc apply -f {{ openshift_installer_path }}/htpasswd-cr.yaml
       ignore_errors: yes
+
+    - name: Create default project settings template
+      template:
+        src: "{{ openshift_installer_path }}/roles/templates/defaultProject.yaml.j2"
+        dest: "{{ openshift_installer_path }}/defaultProject.yaml"
+
+    - name: Apply default project settings
+      shell: oc apply -f {{ openshift_installer_path }}/defaultProject.yaml
+
+    - name: Add default project settings to openshift config
+      shell: >
+        oc get project.config.openshift.io/cluster -o yaml
+        | sed 's/spec: {}/spec: {"projectRequestTemplate":{"name": "project-request"}}/g'
+        | oc apply -f -
 
     - name: pausing 120 seconds to allow htpasswd authentication provider to start
       pause:
