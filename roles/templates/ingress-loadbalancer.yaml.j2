@@ -1,6 +1,3 @@
-# Usage example:
-# oc process-f ./ingress-loadbalancer.yaml \
-#   -p INGRESS_GATEWAY_NAME=microservices-demo-ingressgateway | oc create -f -
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
@@ -14,11 +11,11 @@ objects:
 - apiVersion: networking.k8s.io/v1
   kind: NetworkPolicy
   metadata:
-    name: istio-${INGRESS_GATEWAY_NAME}
+    name: istio-demogateway-user{{ openshift_user_count }}
   spec:
     podSelector:
       matchLabels:
-        istio: ${INGRESS_GATEWAY_NAME}
+        istio: demogateway-user{{ openshift_user_count }}
     ingress:
     - {}
     policyTypes:
@@ -26,17 +23,17 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: ${INGRESS_GATEWAY_NAME}-service-account
+    name: demogateway-user{{ openshift_user_count }}-service-account
     labels:
-      app: istio-${INGRESS_GATEWAY_NAME}
-      istio: ${INGRESS_GATEWAY_NAME}
+      app: istio-demogateway-user{{ openshift_user_count }}
+      istio: demogateway-user{{ openshift_user_count }}
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       maistra.io/mesh-generation: 1.0.7-1.el8-1
     labels:
-      app: istio-${INGRESS_GATEWAY_NAME}
+      app: istio-demogateway-user{{ openshift_user_count }}
       app.kubernetes.io/component: gateways
       app.kubernetes.io/instance: istio-system
       app.kubernetes.io/managed-by: maistra-istio-operator
@@ -45,11 +42,11 @@ objects:
       app.kubernetes.io/version: 1.0.7-1.el8-1
       chart: gateways
       heritage: Tiller
-      istio: ${INGRESS_GATEWAY_NAME}
+      istio: demogateway-user{{ openshift_user_count }}
       maistra-version: 1.0.7
       maistra.io/owner: istio-system
       release: istio
-    name: istio-${INGRESS_GATEWAY_NAME}
+    name: istio-demogateway-user{{ openshift_user_count }}
   spec:
     ports:
     - name: status-port
@@ -69,8 +66,8 @@ objects:
       protocol: TCP
       targetPort: 15443
     selector:
-      app: istio-${INGRESS_GATEWAY_NAME}
-      istio: ${INGRESS_GATEWAY_NAME}
+      app: istio-demogateway-user{{ openshift_user_count }}
+      istio: demogateway-user{{ openshift_user_count }}
       release: istio
     sessionAffinity: None
     type: ClusterIP
@@ -84,7 +81,7 @@ objects:
       maistra.io/mesh-generation: 1.0.7-1.el8-1
     generation: 1
     labels:
-      app: istio-${INGRESS_GATEWAY_NAME}
+      app: istio-demogateway-user{{ openshift_user_count }}
       app.kubernetes.io/component: gateways
       app.kubernetes.io/instance: istio-system
       app.kubernetes.io/managed-by: maistra-istio-operator
@@ -93,19 +90,19 @@ objects:
       app.kubernetes.io/version: 1.0.7-1.el8-1
       chart: gateways
       heritage: Tiller
-      istio: ${INGRESS_GATEWAY_NAME}
+      istio: demogateway-user{{ openshift_user_count }}
       maistra-version: 1.0.7
       maistra.io/owner: istio-system
       release: istio
-    name: istio-${INGRESS_GATEWAY_NAME}
+    name: istio-demogateway-user{{ openshift_user_count }}
   spec:
     progressDeadlineSeconds: 2147483647
     replicas: 1
     revisionHistoryLimit: 2147483647
     selector:
       matchLabels:
-        app: istio-${INGRESS_GATEWAY_NAME}
-        istio: ${INGRESS_GATEWAY_NAME}
+        app: istio-demogateway-user{{ openshift_user_count }}
+        istio: demogateway-user{{ openshift_user_count }}
     strategy:
       rollingUpdate:
         maxSurge: 25%
@@ -117,10 +114,10 @@ objects:
           sidecar.istio.io/inject: "false"
         creationTimestamp: null
         labels:
-          app: istio-${INGRESS_GATEWAY_NAME}
+          app: istio-demogateway-user{{ openshift_user_count }}
           chart: gateways
           heritage: Tiller
-          istio: ${INGRESS_GATEWAY_NAME}
+          istio: demogateway-user{{ openshift_user_count }}
           maistra-control-plane: istio-system
           release: istio
       spec:
@@ -264,15 +261,15 @@ objects:
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
-        serviceAccount: ${INGRESS_GATEWAY_NAME}-service-account
-        serviceAccountName: ${INGRESS_GATEWAY_NAME}-service-account
+        serviceAccount: demogateway-user{{ openshift_user_count }}-service-account
+        serviceAccountName: demogateway-user{{ openshift_user_count }}-service-account
         terminationGracePeriodSeconds: 30
         volumes:
         - name: istio-certs
           secret:
             defaultMode: 420
             optional: true
-            secretName: istio.${INGRESS_GATEWAY_NAME}-service-account
+            secretName: istio.demogateway-user{{ openshift_user_count }}-service-account
         - name: ingressgateway-certs
           secret:
             defaultMode: 420
@@ -289,7 +286,7 @@ objects:
     annotations:
       openshift.io/host.generated: "true"
     labels:
-      app: istio-${INGRESS_GATEWAY_NAME}
+      app: istio-demogateway-user{{ openshift_user_count }}
       app.kubernetes.io/component: gateways
       app.kubernetes.io/instance: istio-system
       app.kubernetes.io/managed-by: maistra-istio-operator
@@ -298,18 +295,18 @@ objects:
       app.kubernetes.io/version: 1.0.7-1.el8-1
       chart: gateways
       heritage: Tiller
-      istio: ${INGRESS_GATEWAY_NAME}
+      istio: demogateway-user{{ openshift_user_count }}
       maistra-version: 1.0.7
       maistra.io/owner: istio-system
       release: istio
-    name: istio-${INGRESS_GATEWAY_NAME}
+    name: istio-demogateway-user{{ openshift_user_count }}
   spec:
     port:
       targetPort: 8080
     subdomain: ""
     to:
       kind: Service
-      name: istio-${INGRESS_GATEWAY_NAME}
+      name: istio-demogateway-user{{ openshift_user_count }}
       weight: 100
     wildcardPolicy: None
 parameters:
