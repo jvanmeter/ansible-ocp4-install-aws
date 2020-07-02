@@ -1,9 +1,8 @@
-# TODO: parameterize user number loop variable
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: keycloak-operator
-  namespace: user$i  # TODO
+  namespace: user{{ item }}
 spec:
   channel: alpha
   installPlanApproval: Automatic
