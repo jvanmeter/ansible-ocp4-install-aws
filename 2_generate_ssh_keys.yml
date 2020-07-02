@@ -17,6 +17,8 @@
       size: 4096
       type: rsa
 
+
+# TODO: evaluate capturing the ssh-add output and creating an environment variable
   - debug:
       msg: Sequentially run the eval and ssh-add commands below.
 
