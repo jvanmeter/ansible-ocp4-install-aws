@@ -11,11 +11,11 @@ objects:
 - apiVersion: networking.k8s.io/v1
   kind: NetworkPolicy
   metadata:
-    name: istio-demogateway-user{{ openshift_user_count }}
+    name: istio-demogateway-user{{ item }}
   spec:
     podSelector:
       matchLabels:
-        istio: demogateway-user{{ openshift_user_count }}
+        istio: demogateway-user{{ item }}
     ingress:
     - {}
     policyTypes:
@@ -23,17 +23,17 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: demogateway-user{{ openshift_user_count }}-service-account
+    name: demogateway-user{{ item }}-service-account
     labels:
-      app: istio-demogateway-user{{ openshift_user_count }}
-      istio: demogateway-user{{ openshift_user_count }}
+      app: istio-demogateway-user{{ item }}
+      istio: demogateway-user{{ item }}
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       maistra.io/mesh-generation: 1.0.7-1.el8-1
     labels:
-      app: istio-demogateway-user{{ openshift_user_count }}
+      app: istio-demogateway-user{{ item }}
       app.kubernetes.io/component: gateways
       app.kubernetes.io/instance: istio-system
       app.kubernetes.io/managed-by: maistra-istio-operator
@@ -42,11 +42,11 @@ objects:
       app.kubernetes.io/version: 1.0.7-1.el8-1
       chart: gateways
       heritage: Tiller
-      istio: demogateway-user{{ openshift_user_count }}
+      istio: demogateway-user{{ item }}
       maistra-version: 1.0.7
       maistra.io/owner: istio-system
       release: istio
-    name: istio-demogateway-user{{ openshift_user_count }}
+    name: istio-demogateway-user{{ item }}
   spec:
     ports:
     - name: status-port
@@ -66,8 +66,8 @@ objects:
       protocol: TCP
       targetPort: 15443
     selector:
-      app: istio-demogateway-user{{ openshift_user_count }}
-      istio: demogateway-user{{ openshift_user_count }}
+      app: istio-demogateway-user{{ item }}
+      istio: demogateway-user{{ item }}
       release: istio
     sessionAffinity: None
     type: ClusterIP
@@ -81,7 +81,7 @@ objects:
       maistra.io/mesh-generation: 1.0.7-1.el8-1
     generation: 1
     labels:
-      app: istio-demogateway-user{{ openshift_user_count }}
+      app: istio-demogateway-user{{ item }}
       app.kubernetes.io/component: gateways
       app.kubernetes.io/instance: istio-system
       app.kubernetes.io/managed-by: maistra-istio-operator
@@ -90,19 +90,19 @@ objects:
       app.kubernetes.io/version: 1.0.7-1.el8-1
       chart: gateways
       heritage: Tiller
-      istio: demogateway-user{{ openshift_user_count }}
+      istio: demogateway-user{{ item }}
       maistra-version: 1.0.7
       maistra.io/owner: istio-system
       release: istio
-    name: istio-demogateway-user{{ openshift_user_count }}
+    name: istio-demogateway-user{{ item }}
   spec:
     progressDeadlineSeconds: 2147483647
     replicas: 1
     revisionHistoryLimit: 2147483647
     selector:
       matchLabels:
-        app: istio-demogateway-user{{ openshift_user_count }}
-        istio: demogateway-user{{ openshift_user_count }}
+        app: istio-demogateway-user{{ item }}
+        istio: demogateway-user{{ item }}
     strategy:
       rollingUpdate:
         maxSurge: 25%
@@ -114,10 +114,10 @@ objects:
           sidecar.istio.io/inject: "false"
         creationTimestamp: null
         labels:
-          app: istio-demogateway-user{{ openshift_user_count }}
+          app: istio-demogateway-user{{ item }}
           chart: gateways
           heritage: Tiller
-          istio: demogateway-user{{ openshift_user_count }}
+          istio: demogateway-user{{ item }}
           maistra-control-plane: istio-system
           release: istio
       spec:
@@ -261,15 +261,15 @@ objects:
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
-        serviceAccount: demogateway-user{{ openshift_user_count }}-service-account
-        serviceAccountName: demogateway-user{{ openshift_user_count }}-service-account
+        serviceAccount: demogateway-user{{ item }}-service-account
+        serviceAccountName: demogateway-user{{ item }}-service-account
         terminationGracePeriodSeconds: 30
         volumes:
         - name: istio-certs
           secret:
             defaultMode: 420
             optional: true
-            secretName: istio.demogateway-user{{ openshift_user_count }}-service-account
+            secretName: istio.demogateway-user{{ item }}-service-account
         - name: ingressgateway-certs
           secret:
             defaultMode: 420
@@ -286,7 +286,7 @@ objects:
     annotations:
       openshift.io/host.generated: "true"
     labels:
-      app: istio-demogateway-user{{ openshift_user_count }}
+      app: istio-demogateway-user{{ item }}
       app.kubernetes.io/component: gateways
       app.kubernetes.io/instance: istio-system
       app.kubernetes.io/managed-by: maistra-istio-operator
@@ -295,18 +295,18 @@ objects:
       app.kubernetes.io/version: 1.0.7-1.el8-1
       chart: gateways
       heritage: Tiller
-      istio: demogateway-user{{ openshift_user_count }}
+      istio: demogateway-user{{ item }}
       maistra-version: 1.0.7
       maistra.io/owner: istio-system
       release: istio
-    name: istio-demogateway-user{{ openshift_user_count }}
+    name: istio-demogateway-user{{ item }}
   spec:
     port:
       targetPort: 8080
     subdomain: ""
     to:
       kind: Service
-      name: istio-demogateway-user{{ openshift_user_count }}
+      name: istio-demogateway-user{{ item }}
       weight: 100
     wildcardPolicy: None
 parameters:

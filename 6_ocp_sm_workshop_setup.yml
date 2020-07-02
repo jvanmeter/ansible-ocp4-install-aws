@@ -1,50 +1,55 @@
 ---
-# setup workshop environment
 
-  - name: Make sure the operators are all installed
-    command: oc adm groups new workshop
+- name: Make sure the operators are all installed
+  command: oc adm groups new workshop
 
-  - name: configure istio service mesh rbac
-    k8s:
-      state: present
-      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio-rbac.yaml') }}"
+- name: configure istio service mesh rbac
+  k8s:
+    state: present
+    definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio-rbac.yaml') }}"
 
-  - name: add users to workshop group
-    shell: oc adm groups add-users workshop user{{ item }}
-    with_items:
-      - {{ openshift_user_count }}
+- name: add users to workshop group
+  command: oc adm groups add-users workshop user{{ item }}
+  with_sequence:
+    - start: 1
+    - end: {{ openshift_user_count|int }}
 
-  - name: create user projects
-    shell: oc new-project user$i --as=user{{ item }} --as-group=system:authenticated --as-group=system:authenticated:oauth
-    with_items:
-      - {{ openshift_user_count }}
+- name: create user projects
+  command: oc new-project user$i --as=user{{ item }} --as-group=system:authenticated --as-group=system:authenticated:oauth
+  with_sequence:
+    - start: 1
+    - end: {{ openshift_user_count|int }}
 
+# TODO: potential issue with ingress-loadbalancer.yaml.j2 template's use of $(POD_NAMESPACE)
 - name: create user ingress gateways
   k8s:
     state: present
     definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/ingress-loadbalancer.yaml.j2') }}"
-    with_items:
-      - {{ openshift_user_count }}
+  with_sequence:
+    - start: 1
+    - end: {{ openshift_user_count|int }}
 
-# TODO: verify method for using a template in the definition file lookup
-  - name: Install istio servicemesh member roll
-    k8s:
-      state: present
-      definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/istio-memberroll.yaml.j2') }}"
+- name: Install istio servicemesh member roll
+  k8s:
+    state: present
+    definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/istio-memberroll.yaml.j2') }}"
 
-  - name: remove DeploymentConfig exclusion from kiali configmap
-    shell: "oc get cm/kiali --namespace istio-system --output yaml | grep --invert-match "DeploymentConfig" | oc apply -"
+- name: remove DeploymentConfig exclusion from kiali configmap
+  shell: "oc get cm/kiali --namespace istio-system --output yaml | grep --invert-match "DeploymentConfig" | oc apply -"
 
-  - name: Make sure the operators are all installed
-    command: oc rollout restart deployment kiali --namespace istio-system
+- name: Make sure the operators are all installed
+  command: oc rollout restart deployment kiali --namespace istio-system
 
-  - name: Create istio user operatorgroups
-    k8s:
-      state: present
-      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio_create_user_operatorgroup.yaml') }}"
+- name: Create istio user operatorgroups
+  k8s:
+    state: present
+    definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio_create_user_operatorgroup.yaml') }}"
 
-  - name: Install keycloak operator into each user's project
-    k8s:
-      state: present
-      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/keycloak_user_install.yaml') }}"
+- name: Install keycloak operator into each user's project
+  k8s:
+    state: present
+    definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/keycloak_user_install.yaml.j2') }}"
+  with_sequence:
+    - start: 1
+    - end: {{ openshift_user_count|int }}
 
