@@ -9,30 +9,34 @@
       state: present
       definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio-rbac.yaml') }}"
 
+  - name: add users to workshop group
+    shell: oc adm groups add-users workshop user{{ item }}
+    with_items:
+      - {{ openshift_user_count }}
 
-for (( i=1 ; i<=$NUM_USERS ; i++ ))
-do 
-  oc adm groups add-users workshop user$i
-  oc new-project user$i --as=user$i \
-    --as-group=system:authenticated --as-group=system:authenticated:oauth
-  oc process -f ./roles/templates/ingress-loadbalancer.yaml \
-  -p INGRESS_GATEWAY_NAME=demogateway-user$i | oc create -n user$i -f -
-done
+  - name: create user projects
+    shell: oc new-project user$i --as=user{{ item }} --as-group=system:authenticated --as-group=system:authenticated:oauth
+    with_items:
+      - {{ openshift_user_count }}
 
+- name: create user ingress gateways
+  k8s:
+    state: present
+    definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/ingress-loadbalancer.yaml.j2') }}"
+    with_items:
+      - {{ openshift_user_count }}
+
+# TODO: verify method for using a template in the definition file lookup
   - name: Install istio servicemesh member roll
     k8s:
       state: present
-      definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio-memberroll.yaml') }}"
-#    when:
-#      - not reg_servicemesh_member_roll.resources
+      definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/istio-memberroll.yaml.j2') }}"
 
-
-oc edit cm/kiali -n istio-system
-search for "excluded_workloads" and remove DeploymentConfig from the list
+  - name: remove DeploymentConfig exclusion from kiali configmap
+    shell: "oc get cm/kiali --namespace istio-system --output yaml | grep --invert-match "DeploymentConfig" | oc apply -"
 
   - name: Make sure the operators are all installed
-    command: oc rollout restart deployment kiali -n istio-system
-
+    command: oc rollout restart deployment kiali --namespace istio-system
 
   - name: Create istio user operatorgroups
     k8s:
