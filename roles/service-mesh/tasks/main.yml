@@ -13,8 +13,7 @@
     namespace: "openshift-operators"
   loop: "{{ servicemesh_operators }}"
 
-# TODO: Add output on each retry.
-# TODO: update delay to 60 and retries to 10
+# TODO: Add output on each retry; if practical
 - name: Make sure the operators are all installed
   command: oc get clusterserviceversions -n istio-system -o custom-columns='PHASE:status.phase' --no-headers
   register: servicemesh_operator_status
@@ -25,8 +24,8 @@
   until:
     - servicemesh_operator_status.stdout_lines
     - operator_count == succeeded_count
-  delay: 10
-  retries: 60
+  delay: 30
+  retries: 20
   # wait for 10 minutes for the operators to be installed
   # On initial checks servicemesh_operator_status.stdout_lines is empty
   # so operator_count == succeeded_count will be true because both are 0
