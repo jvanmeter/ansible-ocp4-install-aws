@@ -96,13 +96,15 @@ Uses the openshift-installer to remove all OpenShift cluster assets provisioned 
 #### Playbook summary
 After editing the ./group_vars/all/all.yml file to define the needed OpenShift cluster variables, run the following ansible-playbook commands in the order listed below:
 
-`sudo ansible-playbook 1_get_installation_files.yml`
-`ansible-playbook 2_generate_ssh_keys.yml`
-`ansible-playbook 3_install_ocp_cluster.yml`
-`ansible-playbook 4_openshift_create_users.yml`
-`ansible-playbook 5_service_mesh_install.yml`
-`ansible-playbook 6_ocp_sm_workshop_setup.yml`
-`ansible-playbook 7_openshift_teardown_cluster.yml`
+```
+sudo ansible-playbook 1_get_installation_files.yml
+ansible-playbook 2_generate_ssh_keys.yml
+ansible-playbook 3_install_ocp_cluster.yml
+ansible-playbook 4_openshift_create_users.yml
+ansible-playbook 5_service_mesh_install.yml
+ansible-playbook 6_ocp_sm_workshop_setup.yml
+ansible-playbook 7_openshift_teardown_cluster.yml
+```
 
 NOTE: Playbooks 5 and 6 are optional and specific to deploying the OpenShift Service Mesh.
 
