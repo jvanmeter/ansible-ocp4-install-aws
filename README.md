@@ -17,10 +17,12 @@ A privileged AWS account will be needed to install OpenShift 4 using the full st
 The full stack deployer requires privileged permissions in AWS as it needs the ability to create and delete AWS users along with reading and writing IAM permissions.  This capability is often reserved for administrative users.  The specific permissions needed by the installer to deploy OpenShift 4.4 are provided in JSON format in the serviceAccount folder.  This JSON file can be imported into AWS to apply the necessary permissions to a user or service account.  Refer to the official OpenShift AWS installation documentation for additional information. [Configuring AWS User Permissions for OpenShift installation](https://docs.openshift.com/container-platform/latest/installing/installing_aws/installing-aws-account.html)
 
 ## Ansible playbook variables setup
-All variables are contained in a single global variables file `./group_vars/all/all.yml`.  Many of the variables in the file can be left with their default settings.  The variables listed below should be reviewed and optionally changed based on the cluster requirements.
+All variables are contained in a single global variables file `./group_vars/all/all.yml`.  This file is named `all.yml_example` in the repo and must be renamed to `all.yml` before running the deployment playbooks.
+
+Many of the variables in the file can be left with their default settings.  The variables listed below should be reviewed and optionally changed based on the cluster requirements.
 
 #### `openshift_version:`
-It is recommended to use the latest stable openshift-installer build on the [OpenShift clients mirror site](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/).  The `openshift_version` variable should be the full client version such as for example `4.5.3`.  The installer has been tested with Release Candidate version strings (i.e. `4.5.0-rc.7`).
+It is recommended to use the latest stable openshift-install build on the [OpenShift clients mirror site](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/).  The `openshift_version` variable should be the full client version such as for example `4.5.3`.  The installer has been tested with Release Candidate version strings (i.e. `4.5.0-rc.7`).
 
 #### `openshift_odo_version:`
 This is similar to the the `openshift_version` variable except it defines the ODO (OpenShift Do) CLI client version.  This is not required to deploy the workshop, however it is included as an additional tool.  Available ODO versions are located in [this directory](https://mirror.openshift.com/pub/openshift-v4/clients/odo/) on the OpenShift mirror site.
@@ -66,7 +68,7 @@ These playbooks are expected to be executed in sequential order.  Playbooks 1 th
 
 #### `sudo ansible-playbook 1_get_installation_files.yml`
 Downloads and installs the following components:
-- openshift-installer
+- openshift-install
 - oc CLI platform admin tool
 - odo CLI developer tool
 
@@ -74,7 +76,7 @@ Downloads and installs the following components:
 Generates ssh keys used to connect to the OpenShift cluster RHEL CoreOS nodes.  RHEL CoreOS is designed to be immutable and remotely managed.  Directly logging into the CoreOS nodes is generally discouraged.
 
 #### `ansible-playbook 3_install_ocp_cluster.yml`
-Creates the install-config.yaml file used by the openshift-installer to set the configuration variables used during cluster deployment.  These variables are located in the global variables file `./group_vars/all/all.yml`.  Run the openshift-install command output to the screen to start the cluster installation.  This step is manual as the provisioning process takes approximately 40 minutes and the openshift-install output cannot be viewed when triggered by Ansible.
+Creates the install-config.yaml file used by the openshift-install to set the configuration variables used during cluster deployment.  These variables are located in the global variables file `./group_vars/all/all.yml`.  Run the openshift-install command output to the screen to start the cluster installation.  This step is manual as the provisioning process takes approximately 40 minutes and the openshift-install output cannot be viewed when triggered by Ansible.
 
 #### `ansible-playbook 4_openshift_create_users.yml`
 Configures and enables the OpenShift HTPasswd authentication provider.  A cluster administrator and multiple workshop user accounts are generated and pushed to the OpenShift cluster.  The default kubeadmin account is disabled and removed once the new cluster administrator account is established.
@@ -91,10 +93,10 @@ Installs the OpenShift Service Mesh operators to establish the service mesh serv
 Builds out the required configuration and setup for an OpenShift Service Mesh workshop.  If you are not hosting that specific workshop, you may want to consider reviewing this playbook instead of running it.
 
 #### `ansible-playbook 7_openshift_teardown_cluster.yml`
-Uses the openshift-installer to remove all OpenShift cluster assets provisioned during the initial cluster installation along with any cluster resources provisioned while it was running.
+Uses the openshift-install to remove all OpenShift cluster assets provisioned during the initial cluster installation along with any cluster resources provisioned while it was running.
 
 #### Playbook summary
-After editing the ./group_vars/all/all.yml file to define the needed OpenShift cluster variables, run the following ansible-playbook commands in the order listed below:
+Rename './group_vars/all/all.yml_example' to './group_vars/all/all.yml'.  Edit the `./group_vars/all/all.yml` file to define the needed OpenShift cluster variables.  Then run the following ansible-playbook commands in the order listed below:
 
 ```
 sudo ansible-playbook 1_get_installation_files.yml
