@@ -94,7 +94,7 @@ Builds out the required configuration and setup for an OpenShift Service Mesh wo
 Uses the openshift-installer to remove all OpenShift cluster assets provisioned during the initial cluster installation along with any cluster resources provisioned while it was running.
 
 ---
-## Fedora 32 - Dependencies setup
+## Fedora 32 - Dependencies setup (DRAFT)
 Clone the ansible-ocp4-install-aws repo and change directory into the repo directory.
 
 Place the pull secret file, named 'pull-secret' in the top level directory of the cloned repo
