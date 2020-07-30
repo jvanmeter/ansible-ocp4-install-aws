@@ -74,7 +74,7 @@ Downloads and installs the following components:
 Generates ssh keys used to connect to the OpenShift cluster RHEL CoreOS nodes.  RHEL CoreOS is designed to be immutable and remotely managed.  Directly logging into the CoreOS nodes is generally discouraged.
 
 #### `ansible-playbook 3_install_ocp_cluster.yml`
-Creates the install-config.yaml file used by the openshift-installer to set the configuration variables used during cluster deployment.  These variables are located in the global variables file `./group_vars/all/all.yml`.
+Creates the install-config.yaml file used by the openshift-installer to set the configuration variables used during cluster deployment.  These variables are located in the global variables file `./group_vars/all/all.yml`.  Run the openshift-install command output to the screen to start the cluster installation.  This step is manual as the provisioning process takes approximately 40 minutes and the openshift-install output cannot be viewed when triggered by Ansible.
 
 #### `ansible-playbook 4_openshift_create_users.yml`
 Configures and enables the OpenShift HTPasswd authentication provider.  A cluster administrator and multiple workshop user accounts are generated and pushed to the OpenShift cluster.  The default kubeadmin account is disabled and removed once the new cluster administrator account is established.
