@@ -19,3 +19,9 @@ journal-gatewayd*
 auth/
 kubeadmin-password
 kubeconfig
+defaultProject.yaml
+/elasticsearch-operator.yml
+htpasswd-cr.yaml
+/jaegar-operator.yml
+/kiali-operator.yml
+/servicemesh-operator.yml

@@ -6,16 +6,22 @@
     state: present
     definition: "{{ lookup('file', 'servicemesh-namespace.yml') }}"
 
+- name: template values in operators
+  template:
+    src: "{{ item }}.yml"
+    dest: "{{ playbook_dir }}/{{ item }}.yml"
+  loop: "{{ servicemesh_operators }}"
+
 - name: Install Operators required for ServiceMesh
   k8s:
     state: present
-    definition: "{{ lookup('file', '{{ item }}.yml') }}"
+    definition: "{{ lookup('file', '{{ playbook_dir }}/{{ item }}.yml') }}"
     namespace: "openshift-operators"
   loop: "{{ servicemesh_operators }}"
 
 # TODO: Add output on each retry; if practical
 - name: Make sure the operators are all installed
-  command: oc get clusterserviceversions -n istio-system -o custom-columns='PHASE:status.phase' --no-headers
+  command: "{{ playbook_dir }}/oc get clusterserviceversions -n istio-system -o custom-columns='PHASE:status.phase' --no-headers"
   register: servicemesh_operator_status
   changed_when: false
   vars:
