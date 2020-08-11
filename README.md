@@ -122,6 +122,7 @@ Place the pull secret file, named 'pull-secret' in the top level directory of th
   - Python3 libraries: 
     - python3-kubernetes
     - python3-openshift
+    - python3-passlib
 
 
 The DNF package manager command to install the required components is provided below:

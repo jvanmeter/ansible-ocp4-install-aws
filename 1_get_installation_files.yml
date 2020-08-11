@@ -18,7 +18,7 @@
   - name: configure openshift oc command completion
     shell: "{{ item }}"
     loop:
-      - "oc completion bash > oc_bash_completion"
+      - "{{ playbook_dir }}/oc completion bash > oc_bash_completion"
       - "cp oc_bash_completion /etc/bash_completion.d/"
 
   - name: extract openshift odo developer cli tool
