@@ -23,7 +23,7 @@ openshift_control_node_replicas:        3              # use a value of '3' only
 openshift_worker_node_instance_type:    m5a.xlarge	   # default = 4vCPUs / 16 GB RAM (i.e. m5a.xlarge)
 openshift_worker_node_replicas:         3              # default = '3'  Node counts of =< 3 are valid
 openshift_install_pull_secret:          " {{ lookup('file', '{{ openshift_installer_path }}/pull-secret') }}"
-openshift_node_ssh_public_key:          "{{ lookup('file', '{{ openshift_installer_path }}/{{ openshift_cluster_name }}-key.pub') }}"
+openshift_node_ssh_public_key:          "{{ lookup('file', '{{ openshift_build_path }}/{{ openshift_cluster_name }}-key.pub') }}"
 openshift_installer_log_level:          debug          # recommended log level options: info or debug
 
 # service mesh operator variables
