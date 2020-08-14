@@ -5,9 +5,6 @@ metadata:
   namespace: user{{ item }}
 spec:
   approval: Manual
-  approved: true
-  clusterServiceVersionNames: keycloak-operator.{{ keycloak_operator_version }}
-#  name: keycloak-operator
-  generation:
-  source: community-operators
-  sourceNamespace: openshift-marketplace
+  approved: approved
+  clusterServiceVersionNames:
+    - keycloak-operator.{{ keycloak_operator_version }}
