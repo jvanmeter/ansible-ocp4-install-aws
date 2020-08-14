@@ -8,20 +8,20 @@
 
 - name: template values in operators
   template:
-    src: "{{ item }}.yml"
-    dest: "{{ playbook_dir }}/{{ item }}.yml"
+    src: "{{ item }}.yml.j2"
+    dest: "{{ openshift_build_path }}/{{ item }}.yml"
   loop: "{{ servicemesh_operators }}"
 
 - name: Install Operators required for ServiceMesh
   k8s:
     state: present
-    definition: "{{ lookup('file', '{{ playbook_dir }}/{{ item }}.yml') }}"
+    definition: "{{ lookup('template', '{{ openshift_build_path }}/{{ item }}.yml') }}"
     namespace: "openshift-operators"
   loop: "{{ servicemesh_operators }}"
 
 # TODO: Add output on each retry; if practical
 - name: Make sure the operators are all installed
-  command: "{{ playbook_dir }}/oc get clusterserviceversions -n istio-system -o custom-columns='PHASE:status.phase' --no-headers"
+  command: "{{ openshift_build_path }}/oc get clusterserviceversions -n openshift-operators -o custom-columns='PHASE:status.phase' --no-headers"
   register: servicemesh_operator_status
   changed_when: false
   vars:
@@ -43,6 +43,9 @@
     state: present
     definition: "{{ lookup('file', 'istio-installation.yml') }}"
 
+#
+# NOTE: these commands are not required as they are performed in the ocp_sm_workshop_setup playbook
+#
 #- name: Get ServiceMeshMemberRoll object
 #  k8s_info:
 #    api_version: maistra.io/v1
