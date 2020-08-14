@@ -2,7 +2,7 @@
 - hosts: localhost
 
   environment:
-    KUBECONFIG: "{{ openshift_build_path }}/auth/kubeconfig"  # "{{ ansible_env.PWD }}/auth/kubeconfig"
+    KUBECONFIG: "{{ openshift_build_path }}/auth/kubeconfig"
 
   tasks:
     - name: Deploy OpenShift Service Mesh

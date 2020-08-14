@@ -1,6 +1,10 @@
 ---
 - hosts: localhost
 
+  environment:
+    KUBECONFIG: "{{ openshift_build_path }}/auth/kubeconfig"
+
+
   tasks:
     - name: create workshop group
       command: "{{ openshift_build_path }}/oc adm groups new workshop"
