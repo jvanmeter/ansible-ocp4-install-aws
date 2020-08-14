@@ -34,8 +34,8 @@
     state: present
     definition: "{{ lookup('template', {{ openshift_installer_path }}'/roles/templates/istio-memberroll.yaml.j2') }}"
 
-- name: remove DeploymentConfig exclusion from kiali configmap
-  shell: "oc get cm/kiali --namespace istio-system --output yaml | grep --invert-match "DeploymentConfig" | oc apply -"
+# - name: remove DeploymentConfig exclusion from kiali configmap
+#   shell: "oc get cm/kiali --namespace istio-system --output yaml | grep --invert-match "DeploymentConfig" | oc apply -"
 
 - name: Make sure the operators are all installed
   command: oc rollout restart deployment kiali --namespace istio-system
@@ -43,7 +43,7 @@
 - name: Create istio user operatorgroups
   k8s:
     state: present
-    definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio_create_user_operatorgroup.yaml') }}"
+    definition: "{{ lookup('file', {{ openshift_installer_path }}'/roles/templates/istio_create_user_operatorgroup.yaml.j2') }}"
 
 - name: Install keycloak operator into each user's project
   k8s:
