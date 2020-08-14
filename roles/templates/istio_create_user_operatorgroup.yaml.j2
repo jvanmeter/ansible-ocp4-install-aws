@@ -1,8 +1,8 @@
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: user${i}-asdf
-  namespace: user$i
+  name: user{{ item }}-asdf
+  namespace: user{{ item }}
 spec:
   targetNamespaces:
-  - user$i
+  - user{{ item }}
