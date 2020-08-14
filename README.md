@@ -66,7 +66,7 @@ The ansible-ocp4-install-aws installation wrapper intent is to follow the steps 
 ```
 These playbooks are expected to be executed in sequential order.  Playbooks 1 through 4 are required for standing up a basic OpenShift cluster.  Playbooks 5 and 6 are related to deploying the OpenShift Service Mesh on the cluster.  Playbook 7 will completely teardown any assets associated with the cluster.  If the cluster was scaled out with additional nodes, these EC2 instances will be removed.
 
-#### `sudo ansible-playbook 1_get_installation_files.yml`
+#### `ansible-playbook 1_get_installation_files.yml`
 Downloads and installs the following components:
 - openshift-install
 - oc CLI platform admin tool
@@ -99,7 +99,7 @@ Uses the openshift-install to remove all OpenShift cluster assets provisioned du
 Rename './group_vars/all/all.yml_example' to './group_vars/all/all.yml'.  Edit the `./group_vars/all/all.yml` file to define the needed OpenShift cluster variables.  Then run the following ansible-playbook commands in the order listed below:
 
 ```
-sudo ansible-playbook 1_get_installation_files.yml
+ansible-playbook 1_get_installation_files.yml
 ansible-playbook 2_generate_ssh_keys.yml
 ansible-playbook 3_install_ocp_cluster.yml
 ansible-playbook 4_openshift_create_users.yml
@@ -108,7 +108,7 @@ ansible-playbook 6_ocp_sm_workshop_setup.yml
 ansible-playbook 7_openshift_teardown_cluster.yml
 ```
 
-NOTE: Playbooks 5 and 6 are optional and specific to deploying the OpenShift Service Mesh.
+NOTE: Playbooks 5 and 6 are optional and specific to deploying the OpenShift Service Mesh and configuring the service mesh for a workshop, respectively.  The workshop lab guide can be found on [redhatgov.io](http://redhatgov.io/workshops/openshift_service_mesh/).
 
 ---
 ## Fedora 32 - Dependencies setup (DRAFT)
