@@ -30,7 +30,7 @@
         definition: "{{ lookup('template', './roles/templates/ingress-loadbalancer.yaml.j2') }}"
       with_sequence: start=1 end="{{ openshift_user_count }}"
 
-    - name: Install istio servicemesh member roll
+    - name: install istio servicemesh member roll
       k8s:
         state: present
         definition: "{{ lookup('template', './roles/templates/istio-memberroll.yaml.j2') }}"
@@ -45,14 +45,39 @@
     - name: Make sure the operators are all installed
       command: "{{ openshift_build_path }}/oc rollout restart deployment kiali --namespace istio-system"
 
-    - name: Create istio user operatorgroups
+    - name: create istio user operatorgroups
       k8s:
         state: present
         definition: "{{ lookup('template', './roles/templates/istio_create_user_operatorgroup.yaml.j2') }}"
       with_sequence: start=1 end="{{ openshift_user_count }}"
 
-    - name: Install keycloak operator into each user's project
+    - name: install keycloak operator into each user's project
       k8s:
         state: present
         definition: "{{ lookup('template', './roles/templates/keycloak_user_install.yaml.j2') }}"
       with_sequence: start=1 end="{{ openshift_user_count }}"
+
+# ==================================================
+# Draft notes follow for automation to approve the user keycloak operator instances during deployment
+# ================================================== 
+#
+#    - name: approve keycloak operator install and retain desired version
+#      shell: >
+#        {{ openshift_build_path }}/oc get installplans -o json
+#        | jq -r .items[0].metadata.name]
+#        | # how to register: keycloak_installplan_name variable here?
+#        | {{ openshift_build_path }}/oc patch installplan install-{{ keycloak_installplan_name }} --type merge -p '{"spec":{"approved":true}}'
+#
+#    - name: approve keycloak operator install and retain desired version
+#      k8s:
+#        state:
+#        # install plans are unique by default, how to get the install-xxxxx value then run the patch?
+#        # register output:
+#        # oc get installplans -o json | jq -r .items[0].metadata.name
+#        # oc patch installplan install-tl82z --type merge -p '{"spec":{"approved":true}}'
+#
+#    - name: Approve keycloak operator for each user's project
+#      k8s:
+#        state: present
+#        definition: "{{ lookup('template', './roles/templates/keycloak_installplan_approval.yaml.j2') }}"
+#      with_sequence: start=1 end="{{ openshift_user_count }}"
