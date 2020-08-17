@@ -60,27 +60,11 @@
     - name: approve keycloak operator install and retain desired version
       shell: >
         {{ openshift_build_path }}/oc get installplans -n user{{ item }} -o json
-        | jq -r .items[0].metadata.name]
-      register: keycloak_installplan_user{{ item }}
+        | jq -r .items[0].metadata.name
+      register: "keycloak_installplans"
       with_sequence: start=1 end="{{ openshift_user_count }}"
 
     - name: approve keycloak operator install and retain desired version
-      command:  "{{ openshift_build_path }}/oc patch installplan {{ lookup('vars','keycloak_installplan_user' + item) }} --type merge -p '{"spec":{"approved":true}}'"
-      with_sequence: start=1 end="{{ openshift_user_count }}"
-
-
-# Draft notes follow for automation to approve the user keycloak operator instances during deployment
-# ================================================== #
-#    - name: approve keycloak operator install and retain desired version
-#      k8s:
-#        state:
-#        # install plans are unique by default, how to get the install-xxxxx value then run the patch?
-#        # register output:
-#        # oc get installplans -o json | jq -r .items[0].metadata.name
-#        # oc patch installplan install-tl82z --type merge -p '{"spec":{"approved":true}}'
-#
-#    - name: Approve keycloak operator for each user's project
-#      k8s:
-#        state: present
-#        definition: "{{ lookup('template', './roles/templates/keycloak_installplan_approval.yaml.j2') }}"
-#      with_sequence: start=1 end="{{ openshift_user_count }}"
+      shell: |
+        {{ openshift_build_path }}/oc patch installplan -n user{{ item.item }} {{ item.stdout }} --type merge -p '{"spec":{"approved":true}}'
+      with_items: "{{ keycloak_installplans.results }}"
