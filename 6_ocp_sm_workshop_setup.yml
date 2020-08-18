@@ -34,7 +34,6 @@
       k8s:
         state: present
         definition: "{{ lookup('template', './roles/templates/istio-memberroll.yaml.j2') }}"
-      with_sequence: start=1 end="{{ openshift_user_count }}"
 
     - name: pausing 150 seconds to allow the service mesh to start
       pause:
