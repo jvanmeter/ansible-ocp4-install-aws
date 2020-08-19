@@ -30,7 +30,7 @@
   until:
     - servicemesh_operator_status.stdout_lines
     - operator_count == succeeded_count
-  delay: 30
+  delay: 15
   retries: 20
   # wait for 10 minutes for the operators to be installed
   # On initial checks servicemesh_operator_status.stdout_lines is empty
