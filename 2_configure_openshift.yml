@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+
+  environment:
+    KUBECONFIG: "{{ openshift_build_path }}/auth/kubeconfig"
+
+  tasks:
+    - name: create cluster admin and user accounts
+      include_role:
+        name: openshift_create_users
+      when: create_openshift_users == 'True'
+
+    - name: Deploy OpenShift Service Mesh
+      include_role:
+        name: service-mesh
+      when: deploy_service_mesh == 'True'
+
+    - name: deploy and configure openshift workshop resources
+      include_role:
+        name: openshift_servicemesh_workshop
+      when: deploy_service_mesh_workshop == 'True'

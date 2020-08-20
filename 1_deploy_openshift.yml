@@ -1,6 +1,7 @@
 ---
 - hosts: localhost
-#  become: yes
+
+# NOTE: start playbook 1
 
   tasks:
   - name: create build directory for deployment artifacts
@@ -21,17 +22,31 @@
       dest: "{{ openshift_build_path }}"
       remote_src: yes
 
-#  - name: configure openshift oc command completion
-#    shell: "{{ item }}"
-#    loop:
-#      - "{{ openshift_build_path }}/oc completion bash > oc_bash_completion"
-#      - "cp oc_bash_completion /etc/bash_completion.d/"
-
   - name: extract openshift odo developer cli tool
     unarchive:
       src: https://mirror.openshift.com/pub/openshift-v4/clients/odo/v{{ openshift_odo_version }}/odo-linux-amd64.tar.gz
       dest: "{{ openshift_build_path }}"
       remote_src: yes
 
-#  - name: configure openshift odo command completion
-#    shell: "complete -o nospace -C {{ openshift_build_path }} odo"
+# NOTE: start playbook 2
+
+  - name: generate cluster ssh key pair
+    openssh_keypair:
+      path: "{{ openshift_build_path }}/{{ openshift_cluster_name }}-key"
+      size: 4096
+      type: rsa
+
+# NOTE: start playbook 3
+
+  - name: create openshift install-config.yaml file
+    template:
+      src: "{{ openshift_installer_path }}/roles/templates/install-config.yaml.j2"
+      dest: "{{ openshift_build_path }}/install-config.yaml"
+  - name: backup install-config.yaml file as install-config.yaml.backup
+    copy:
+      src: "{{ openshift_build_path }}/install-config.yaml"
+      dest: "{{ openshift_build_path }}/install-config.yaml.backup"
+  - debug:
+      msg:
+        - "execute the following command to deploy the openshift cluster"
+        - "{{ openshift_build_path }}/openshift-install create cluster --dir={{ openshift_build_path }} --log-level={{ openshift_installer_log_level }}"
