@@ -7,7 +7,7 @@
 - name: configure istio service mesh rbac
   k8s:
     state: present
-    definition: "{{ lookup('file', 'istio-rbac.yaml.j2') }}"
+    definition: "{{ lookup('template', 'istio-rbac.yaml.j2') }}"
 
 - name: add users to workshop group
   command: "{{ openshift_build_path }}/oc adm groups add-users workshop user{{ item }}"
@@ -51,7 +51,11 @@
     definition: "{{ lookup('template', 'keycloak_user_install.yaml.j2') }}"
   with_sequence: start=1 end="{{ openshift_user_count }}"
 
-- name: approve keycloak operator install and retain desired version
+- name: pausing 150 seconds to allow all keycloak operator instances to start
+  pause:
+    seconds: 150
+
+- name: retrieve keycloak operator installPlan name and register result
   shell: >
     {{ openshift_build_path }}/oc get installplans -n user{{ item }} -o json
     | jq -r .items[0].metadata.name
@@ -60,5 +64,5 @@
 
 - name: approve keycloak operator install and retain desired version
   shell: |
-    {{ openshift_build_path }}/oc patch installplan -n user{{ item.item }} {{ item.stdout }} --type merge -p '{"spec":{"approved":true}}'
+    sleep 2s && {{ openshift_build_path }}/oc patch installplan -n user{{ item.item }} {{ item.stdout }} --type merge -p '{"spec":{"approved":true}}'
   with_items: "{{ keycloak_installplans.results }}"

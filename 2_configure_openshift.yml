@@ -4,6 +4,9 @@
   environment:
     KUBECONFIG: "{{ openshift_build_path }}/auth/kubeconfig"
 
+  vars:
+    kubeadmin_password: "{{ lookup('file', '{{ openshift_build_path }}/auth/kubeadmin-password') }}"
+
   tasks:
     - name: create cluster admin and user accounts
       include_role:
@@ -17,5 +20,5 @@
 
     - name: deploy and configure openshift workshop resources
       include_role:
-        name: openshift_servicemesh_workshop
+        name: deploy_service_mesh_workshop
       when: deploy_service_mesh_workshop == 'True'
