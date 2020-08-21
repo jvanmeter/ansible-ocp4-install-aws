@@ -1,6 +1,6 @@
 ---
-# teardown cluster
 - hosts: localhost
+
 
   tasks:
   - debug:

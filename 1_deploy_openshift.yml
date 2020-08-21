@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
 
-# NOTE: start playbook 1
 
   tasks:
   - name: create build directory for deployment artifacts
@@ -28,15 +27,11 @@
       dest: "{{ openshift_build_path }}"
       remote_src: yes
 
-# NOTE: start playbook 2
-
   - name: generate cluster ssh key pair
     openssh_keypair:
       path: "{{ openshift_build_path }}/{{ openshift_cluster_name }}-key"
       size: 4096
       type: rsa
-
-# NOTE: start playbook 3
 
   - name: create openshift install-config.yaml file
     template:
@@ -49,4 +44,5 @@
   - debug:
       msg:
         - "execute the following command to deploy the openshift cluster"
+        - "--------------------"
         - "{{ openshift_build_path }}/openshift-install create cluster --dir={{ openshift_build_path }} --log-level={{ openshift_installer_log_level }}"

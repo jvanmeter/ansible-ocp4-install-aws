@@ -7,6 +7,7 @@
   vars:
     kubeadmin_password: "{{ lookup('file', '{{ openshift_build_path }}/auth/kubeadmin-password') }}"
 
+
   tasks:
     - name: create cluster admin and user accounts
       include_role:
