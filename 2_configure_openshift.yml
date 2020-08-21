@@ -11,12 +11,12 @@
   tasks:
     - name: create cluster admin and user accounts
       include_role:
-        name: openshift_create_users
+        name: create_openshift_users
       when: create_openshift_users == 'True'
 
     - name: Deploy OpenShift Service Mesh
       include_role:
-        name: service-mesh
+        name: deploy_service_mesh
       when: deploy_service_mesh == 'True'
 
     - name: deploy and configure openshift workshop resources
