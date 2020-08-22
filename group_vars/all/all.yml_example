@@ -12,7 +12,7 @@ openshift_odo_path:                     /usr/local/bin/
 create_openshift_users:                 "True"
 openshift_cluster_admin_username:       labadmin
 openshift_cluster_admin_password:       "CHANGE_ME"
-openshift_user_count:                   50            # user1 through user{{ openshift_user_count }}
+openshift_user_count:                   20            # user1 through user{{ openshift_user_count }}
 openshift_user_password:                "CHANGE_ME"
 
 # install-config.yml variables
@@ -29,8 +29,8 @@ openshift_node_ssh_public_key:          "{{ lookup('file', '{{ openshift_build_p
 openshift_installer_log_level:          debug          # recommended log level options: info or debug
 
 # service mesh operator variables
-deploy_service_mesh:                    "True"
-deploy_service_mesh_workshop:           "True"
+deploy_service_mesh:                    "False"
+deploy_service_mesh_workshop:           "False"
 elasticsearch_operator_version:         "{{ openshift_version | regex_replace('^(\d+)(\.\d+).*','\1\2') }}"
 jaegar_operator_version:                stable
 kiali_operator_version:                 stable
