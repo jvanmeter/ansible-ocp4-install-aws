@@ -1,7 +1,7 @@
 # ansible-ocp4-install-aws
 ansible-ocp4-install-aws is an ansible OpenShift 4 installer helper using the full stack AWS installation.  The playbooks allow for installation customization for cluster size, instance types, regions, along with other deployment options.
 
-The ansible-ocp4-install-aws playbooks were originally developed to allow for simple and rapid OpenShift 4 cluster deployments for use with OpenShift training workshop lab environments.  This is especially true for the Service Mesh deployment, as the playbooks are designed to implement a specific workshop configuration.
+The ansible-ocp4-install-aws playbooks were developed to enable simple and rapid OpenShift 4 cluster deployments generally, and specifically to deliver OpenShift training workshop lab environments.  This is especially true for the Service Mesh deployment, as the `deploy_service_mesh_workshop` Ansible role is designed to deliver a Red Hat Service Mesh workshop environment.  The lab guide for this workshop is available [here](http://redhatgov.io/workshops/openshift_service_mesh/).
 
 ---
 ## Dependencies
@@ -54,34 +54,36 @@ The `elasticsearch_operator_version` should match the `major.minor` release of t
 Specifying the current version for the `keycloak_operator_version` variable is a manual process.  The latest version can be found on the [Keycloak Operator](https://operatorhub.io/operator/keycloak-operator) page on OperatorHub.io.
 
 ## Ansible playbook overview
-The ansible-ocp4-install-aws installation wrapper intent is to follow the steps outlined in the OpenShift install documentation, while automating most of the manual steps.  There are currently seven playbook files in this repo:
+The ansible-ocp4-install-aws installation wrapper intent is to follow the steps outlined in the OpenShift install documentation, while automating most of the manual steps.  There are currently three playbook files in this repo:
 ```
-1_get_installation_files.yml
-2_generate_ssh_keys.yml
-3_install_ocp_cluster.yml
-4_openshift_create_users.yml
-5_service_mesh_install.yml
-6_ocp_sm_workshop_setup.yml
-7_openshift_teardown_cluster.yml
+1_deploy_openshift.yml
+2_configure_openshift.yml
+3_teardown_openshift.yml
 ```
-These playbooks are expected to be executed in sequential order.  Playbooks 1 through 4 are required for standing up a basic OpenShift cluster.  Playbooks 5 and 6 are related to deploying the OpenShift Service Mesh on the cluster.  Playbook 7 will completely teardown any assets associated with the cluster.  If the cluster was scaled out with additional nodes, these EC2 instances will be removed.
+These playbooks are intended to be executed in sequential order.  Playbook `1_deploy_openshift.yml` stands up a basic OpenShift cluster.  The `2_configure_openshift.yml` playbook configures the cluster using several roles, each of which can be selectively toggled with the following variables located in the `./group_vars/all/all.yml` file.  These options are listed below:
+```
+create_openshift_users:                 "True"
+deploy_service_mesh:                    "True"
+deploy_service_mesh_workshop:           "True"
+```
+Each role will execute if the value  `True`; set the value to `False` to skip execution of the role.
 
-#### `ansible-playbook 1_get_installation_files.yml`
-Downloads and installs the following components:
+Playbook `3_teardown_openshift.yml` will completely teardown any assets associated with the cluster.  If the cluster was scaled out with additional nodes, these EC2 instances will also be removed.
+
+#### `ansible-playbook 1_deploy_openshift.yml`
+Downloads and extracts the following components:
+
 - openshift-install
 - oc CLI platform admin tool
 - odo CLI developer tool
 
-#### `ansible-playbook 2_generate_ssh_keys.yml`
 Generates ssh keys used to connect to the OpenShift cluster RHEL CoreOS nodes.  RHEL CoreOS is designed to be immutable and remotely managed.  Directly logging into the CoreOS nodes is generally discouraged.
 
-#### `ansible-playbook 3_install_ocp_cluster.yml`
 Creates the install-config.yaml file used by the openshift-install to set the configuration variables used during cluster deployment.  These variables are located in the global variables file `./group_vars/all/all.yml`.  Run the openshift-install command output to the screen to start the cluster installation.  This step is manual as the provisioning process takes approximately 40 minutes and the openshift-install output cannot be viewed when triggered by Ansible.
 
-#### `ansible-playbook 4_openshift_create_users.yml`
+#### `ansible-playbook 2_configure_openshift.yml`
 Configures and enables the OpenShift HTPasswd authentication provider.  A cluster administrator and multiple workshop user accounts are generated and pushed to the OpenShift cluster.  The default kubeadmin account is disabled and removed once the new cluster administrator account is established.
 
-#### `ansible-playbook 5_service_mesh_install.yml`
 Installs the OpenShift Service Mesh operators to establish the service mesh services.  The operators installed to bring up the OpenShift Service Mesh are:
 - Elasticsearch
 - Istio
@@ -89,26 +91,21 @@ Installs the OpenShift Service Mesh operators to establish the service mesh serv
 - Kiali
 - OpenShift Service Mesh
 
-#### `ansible-playbook 6_ocp_sm_workshop_setup.yml`
-Builds out the required configuration and setup for an OpenShift Service Mesh workshop.  If you are not hosting that specific workshop, you may want to consider reviewing this playbook instead of running it.
+Builds out the required configuration and setup for an OpenShift Service Mesh workshop.  If you are not hosting that specific workshop, you may want to consider reviewing this playbook before running this Ansible role.
 
-#### `ansible-playbook 7_openshift_teardown_cluster.yml`
+#### `ansible-playbook 3_teardown_openshift.yml`
 Uses the openshift-install to remove all OpenShift cluster assets provisioned during the initial cluster installation along with any cluster resources provisioned while it was running.
 
 #### Playbook summary
 Rename './group_vars/all/all.yml_example' to './group_vars/all/all.yml'.  Edit the `./group_vars/all/all.yml` file to define the needed OpenShift cluster variables.  Then run the following ansible-playbook commands in the order listed below:
 
 ```
-ansible-playbook 1_get_installation_files.yml
-ansible-playbook 2_generate_ssh_keys.yml
-ansible-playbook 3_install_ocp_cluster.yml
-ansible-playbook 4_openshift_create_users.yml
-ansible-playbook 5_service_mesh_install.yml
-ansible-playbook 6_ocp_sm_workshop_setup.yml
-ansible-playbook 7_openshift_teardown_cluster.yml
+ansible-playbook 1_deploy_openshift.yml
+ansible-playbook 2_configure_openshift.yml
+ansible-playbook 3_teardown_openshift.yml
 ```
 
-NOTE: Playbooks 5 and 6 are optional and specific to deploying the OpenShift Service Mesh and configuring the service mesh for a workshop, respectively.  The workshop lab guide can be found on [redhatgov.io](http://redhatgov.io/workshops/openshift_service_mesh/).
+NOTE: The OpenShift Service Mesh workshop lab guide is located on [redhatgov.io](http://redhatgov.io/workshops/openshift_service_mesh/).
 
 ---
 ## Fedora 32 - Dependencies setup (DRAFT)
