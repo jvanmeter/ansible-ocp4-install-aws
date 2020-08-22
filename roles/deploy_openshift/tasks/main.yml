@@ -32,7 +32,7 @@
 
 - name: create openshift install-config.yaml file
   template:
-    src: "{{ lookup('template', '/install-config.yaml.j2') }}"
+    src: "install-config.yaml.j2"
     dest: "{{ openshift_build_path }}/install-config.yaml"
 
 - name: backup install-config.yaml file as install-config.yaml.backup
