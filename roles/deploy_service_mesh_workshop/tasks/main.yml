@@ -33,10 +33,10 @@
   pause:
     seconds: 150
 
-- name: remove DeploymentConfig exclusion from kiali configmap
+- name: remove deploymentConfig exclusion from kiali configmap
   shell: "{{ openshift_build_path }}/oc get cm/kiali --namespace istio-system --output yaml | grep --invert-match DeploymentConfig | oc apply -f -"
 
-- name: Make sure the operators are all installed
+- name: make sure the operators are all installed
   command: "{{ openshift_build_path }}/oc rollout restart deployment kiali --namespace istio-system"
 
 - name: create istio user operatorgroups

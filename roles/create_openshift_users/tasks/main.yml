@@ -32,15 +32,15 @@
     {{ openshift_build_path }}/oc apply -f {{ openshift_build_path }}/htpasswd-cr.yaml
   ignore_errors: yes
 
-- name: Create default project settings template
+- name: create default project settings template
   template:
     src: "defaultProject.yaml.j2"
     dest: "{{ openshift_build_path }}/defaultProject.yaml"
 
-- name: Apply default project settings
+- name: apply default project settings
   shell: "{{ openshift_build_path }}/oc apply -f {{ openshift_build_path }}/defaultProject.yaml"
 
-- name: Add default project settings to openshift config
+- name: add default project settings to openshift config
   shell: >
     {{ openshift_build_path }}/oc get project.config.openshift.io/cluster -o yaml
     | sed 's/spec: {}/spec: {"projectRequestTemplate":{"name": "project-request"}}/g'

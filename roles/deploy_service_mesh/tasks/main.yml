@@ -1,7 +1,7 @@
 ---
 # tasks file for service-mesh
 
-- name: Create Namespace
+- name: create namespace
   k8s:
     state: present
     definition: "{{ lookup('file', 'servicemesh-namespace.yml') }}"
@@ -12,15 +12,15 @@
     dest: "{{ openshift_build_path }}/{{ item }}.yml"
   loop: "{{ servicemesh_operators }}"
 
-- name: Install Operators required for ServiceMesh
+- name: install operators required for openshift service mesh
   k8s:
     state: present
     definition: "{{ lookup('template', '{{ openshift_build_path }}/{{ item }}.yml') }}"
     namespace: "openshift-operators"
   loop: "{{ servicemesh_operators }}"
 
-# TODO: Add output on each retry; if practical
-- name: Make sure the operators are all installed
+# TODO: add output on each retry; if practical
+- name: make sure the operators are all installed
   command: "{{ openshift_build_path }}/oc get clusterserviceversions -n openshift-operators -o custom-columns='PHASE:status.phase' --no-headers"
   register: servicemesh_operator_status
   changed_when: false
@@ -38,25 +38,7 @@
   # which is why we have an additional check to make sure that
   # servicemesh_operator_status.stdout_lines is not empty.
 
-- name: Install istio servicemesh control plane
+- name: install istio service mesh control plane
   k8s:
     state: present
     definition: "{{ lookup('file', 'istio-installation.yml') }}"
-
-#
-# NOTE: these commands are not required as they are performed in the ocp_sm_workshop_setup playbook
-#
-#- name: Get ServiceMeshMemberRoll object
-#  k8s_info:
-#    api_version: maistra.io/v1
-#    kind: ServiceMeshMemberRoll
-#  register: reg_servicemesh_member_roll
-
-# NOTE: commented out until shell script can be converted to ansible code
-# Only install the default servicemesh member roll if one doesn't exist
-# - name: Install istio servicemesh member roll
-#  k8s:
-#    state: present
-#    definition: "{{ lookup('file', 'istio-memberroll.yml') }}"
-#  when:
-#    - not reg_servicemesh_member_roll.resources

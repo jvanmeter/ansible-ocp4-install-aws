@@ -14,7 +14,7 @@
         name: create_openshift_users
       when: create_openshift_users == 'True'
 
-    - name: Deploy OpenShift Service Mesh
+    - name: deploy openshift service mesh
       include_role:
         name: deploy_service_mesh
       when: deploy_service_mesh == 'True'
