@@ -51,9 +51,9 @@
     definition: "{{ lookup('template', 'keycloak_user_install.yaml.j2') }}"
   with_sequence: start=1 end="{{ openshift_user_count }}"
 
-- name: pausing 150 seconds to allow all keycloak operator instances to start
+- name: pausing {{ 120 + ( openshift_user_count * 3 )}} seconds to allow user keycloak operator instances to start
   pause:
-    seconds: 150
+    seconds: "{{ 120 + ( openshift_user_count * 3 )}}"
 
 - name: retrieve keycloak operator installPlan name and register result
   shell: >
